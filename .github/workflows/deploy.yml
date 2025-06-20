@@ -2,7 +2,7 @@ name: CI/CD to ECR + EC2
 
 on:
   push:
-    branches: [ compose ]
+    branches: [compose]
 
 jobs:
   deploy:
@@ -10,45 +10,45 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-south-1
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
 
-    - name: Login to Amazon ECR
-      run: |
-        aws ecr get-login-password --region ap-south-1 | \
-        docker login --username AWS --password-stdin ${{ secrets.ECR_BACKEND_URI }}
-        aws ecr get-login-password --region ap-south-1 | \
-        docker login --username AWS --password-stdin ${{ secrets.ECR_FRONTEND_URI }}
+      - name: Login to Amazon ECR
+        run: |
+          aws ecr get-login-password --region ap-south-1 | \
+          docker login --username AWS --password-stdin ${{ secrets.ECR_BACKEND_URI }}
+          aws ecr get-login-password --region ap-south-1 | \
+          docker login --username AWS --password-stdin ${{ secrets.ECR_FRONTEND_URI }}
 
-    - name: Build and push backend image
-      run: |
-        docker build -t backend ./mern/backend
-        docker tag backend ${{ secrets.ECR_BACKEND_URI }}:latest
-        docker push ${{ secrets.ECR_BACKEND_URI }}:latest
+      - name: Build and push backend image
+        run: |
+          docker build -t backend ./mern/backend
+          docker tag backend ${{ secrets.ECR_BACKEND_URI }}:latest
+          docker push ${{ secrets.ECR_BACKEND_URI }}:latest
 
-    - name: Build and push frontend image
-      run: |
-        docker build -t frontend ./mern/frontend
-        docker tag frontend ${{ secrets.ECR_FRONTEND_URI }}:latest
-        docker push ${{ secrets.ECR_FRONTEND_URI }}:latest
+      - name: Build and push frontend image
+        run: |
+          docker build -t frontend ./mern/frontend
+          docker tag frontend ${{ secrets.ECR_FRONTEND_URI }}:latest
+          docker push ${{ secrets.ECR_FRONTEND_URI }}:latest
 
-    - name: Deploy on EC2
-      uses: appleboy/ssh-action@v1.0.0
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ubuntu
-        key: ${{ secrets.EC2_SSH_KEY }}
-        script: |
-          aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 195275640451.dkr.ecr.ap-south-1.amazonaws.com
-          docker pull 195275640451.dkr.ecr.ap-south-1.amazonaws.com/mern-frontend:latest
-          docker pull 195275640451.dkr.ecr.ap-south-1.amazonaws.com/mern-backend:latest
-          cd /home/ubuntu/docker-MERN-docker-compose
-          docker-compose down
-          docker-compose up -d
+      - name: Deploy on EC2
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 195275640451.dkr.ecr.ap-south-1.amazonaws.com
+            docker pull 195275640451.dkr.ecr.ap-south-1.amazonaws.com/mern-frontend:latest
+            docker pull 195275640451.dkr.ecr.ap-south-1.amazonaws.com/mern-backend:latest
+            cd /home/ubuntu/docker-MERN-docker-compose
+            docker compose down
+            docker compose up -d
