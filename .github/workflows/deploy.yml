@@ -50,5 +50,5 @@ jobs:
             docker pull 195275640451.dkr.ecr.ap-south-1.amazonaws.com/mern-frontend:latest
             docker pull 195275640451.dkr.ecr.ap-south-1.amazonaws.com/mern-backend:latest
             cd /home/ubuntu/docker-MERN-docker-compose
-            docker compose down
-            docker compose up -d
+            docker-compose down
+            docker-compose up -d
