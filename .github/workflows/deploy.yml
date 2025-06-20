@@ -48,7 +48,7 @@ jobs:
         script: |
           aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 195275640451.dkr.ecr.ap-south-1.amazonaws.com
           docker pull ${{ secrets.ECR_BACKEND_URI }}:latest
-          docker pull ${{ secrets.ECR_FRONTEND_URI }}:latest
+          docker pull 195275640451.dkr.ecr.ap-south-1.amazonaws.com/mern-frontend:latest
           cd ~/mern-docker-compose
           docker compose down
           docker compose up -d
