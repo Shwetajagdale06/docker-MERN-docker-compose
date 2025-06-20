@@ -6,9 +6,12 @@ services:
     networks:
       - mern_network
     environment:
-      MONGO_URI: mongodb://mongo:27017/mydatabase  
+      MONGO_URI: mongodb://mongo:27017/mydatabase
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379  
     depends_on:
       - mongodb
+      - redis
 
   frontend:
     build: ./mern/frontend
