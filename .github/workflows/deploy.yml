@@ -2,7 +2,7 @@ name: CI/CD to ECR + EC2
 
 on:
   push:
-    branches: [ main ]
+    branches: [ compose ]
 
 jobs:
   deploy:
